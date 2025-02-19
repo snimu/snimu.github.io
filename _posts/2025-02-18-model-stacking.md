@@ -1,5 +1,5 @@
 ---
-layout: wide
+layout: splash
 title: "Model stacking"
 date: 2025-02-18
 ---
