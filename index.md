@@ -7,4 +7,6 @@ Hi :) I'm Sebastian. At my job, I work on LLM agents, and in my free time, I tra
 
 ## Blog posts
 
-
+{% for post in site.posts %}
+  * [{{ post.title }}]({{ post.url }}) - {{ post.date | date: "%B %d, %Y" }}
+{% endfor %}
