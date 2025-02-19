@@ -1,5 +1,5 @@
 ---
-layout: splash
+layout: post
 title: "Model stacking"
 date: 2025-02-18
 ---
