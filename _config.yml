@@ -12,8 +12,7 @@ navbar-links:
 
 social-network-links:
   github: snimu
-  # email: "someone@example.com"  # uncomment and add if you want
-  # linkedin: your-linkedin  # uncomment and add if you want
+  email: "sebastian.nicolas.mueller@gmail.com"
 
 # Excerpt word length - how many words to show in post previews
 excerpt_length: 50
