@@ -15,25 +15,3 @@ social-network-links:
 excerpt_length: 50
 feed_show_excerpt: true
 feed_show_tags: true
-
-# Enable LaTeX math rendering via MathJax
-# after-content: |
-#   <script type="text/javascript">
-#     window.MathJax = {
-#       tex: {
-#         packages: ['base', 'ams'],
-#         inlineMath: [ ['$','$'], ['\\(','\\)'] ],
-#         displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
-#         processEscapes: true,
-#         processEnvironments: true
-#       },
-#       loader: {load: ['[tex]/ams']},
-#       options: {
-#         ignoreHtmlClass: 'tex2jax_ignore',
-#         processHtmlClass: 'tex2jax_process'
-#       }
-#     };
-#   </script>
-#   <script type="text/javascript" id="MathJax-script" async
-#     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-#   </script>
