@@ -16,3 +16,11 @@ social-network-links:
 excerpt_length: 50
 feed_show_excerpt: true
 feed_show_tags: true
+
+# Markdown and math settings
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+
+# Add MathJax support
+mathjax: true  # Beautiful Jekyll has built-in MathJax support that's enabled with this flag
