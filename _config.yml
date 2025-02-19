@@ -15,3 +15,17 @@ social-network-links:
 excerpt_length: 50
 feed_show_excerpt: true
 feed_show_tags: true
+
+# Enable LaTeX math rendering via MathJax
+head-extra: |
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      }
+    };
+  </script>
