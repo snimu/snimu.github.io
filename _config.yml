@@ -17,7 +17,7 @@ feed_show_excerpt: true
 feed_show_tags: true
 
 # Enable LaTeX math rendering via MathJax
-head-extra: |
+after-content: |
   <script type="text/javascript">
     window.MathJax = {
       tex: {
