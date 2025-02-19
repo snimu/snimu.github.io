@@ -1,5 +1,25 @@
 title: snimu's blog
-description: The blog of snimu (Sebastian Nicolas Müller)
-theme: jekyll-theme-minimal
-baseurl: ""
+author: Sebastian
+description: Thoughts on LLMs, AI, and language model training
 url: "https://snimu.github.io"
+
+remote_theme: daattali/beautiful-jekyll@6.0.1
+
+# Beautiful Jekyll specific settings
+navbar-links:
+  About: "about"
+  Posts: "/"
+
+social-network-links:
+  github: snimu
+  # email: "someone@example.com"  # uncomment and add if you want
+  # linkedin: your-linkedin  # uncomment and add if you want
+
+# Excerpt word length - how many words to show in post previews
+excerpt_length: 50
+
+# Whether or not to show an excerpt for every blog post in the feed page
+feed_show_excerpt: true
+
+# Whether or not to show a list of tags below each post preview in the feed page
+feed_show_tags: true
