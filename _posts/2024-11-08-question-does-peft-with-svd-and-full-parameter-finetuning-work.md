@@ -1,4 +1,8 @@
-# Question: Does PEFT with SVD and full parameter finetuning work?
+---
+layout: post
+title: "Question: Does PEFT with SVD and full parameter finetuning work?"
+date: 2024-11-08
+---
 
 *Status: is genuinly a question, I haven't looked into it yet*
 

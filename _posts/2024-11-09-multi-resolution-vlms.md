@@ -1,4 +1,8 @@
-# Multi-resolution VLMs for robotics
+---
+layout: post
+title: "Multi-resolution VLMs for robotics"
+date: 2024-11-09
+---
 
 *Status: Idea, no literature research done*
 

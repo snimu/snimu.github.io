@@ -1,4 +1,8 @@
-# Doing Pre-training Research on Instruction Models
+---
+layout: post
+title: "Doing Pre-training Research on Instruction Models"
+date: 2024-11-07
+---
 
 I want to do research on pre-training methods, which is of course best done on base models. However, there is a conflict: evals are often better done on instruction models. Here is a simple way to resolve this conflict.
 
