@@ -2,7 +2,6 @@
 layout: post
 title: "Forward-Backward prediction"
 date: 2025-02-17
-mathjax: true
 ---
 
 What happens if we do **fully causal prediction,
