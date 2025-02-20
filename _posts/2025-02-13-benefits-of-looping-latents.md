@@ -62,3 +62,4 @@ To give a concrete example, let's assume that the highest probability token has 
     month={feb},
     url={https://github.com/snimu/blog/blob/main/contents/benefits-of-looping-latents/article.md}
 }
+```
