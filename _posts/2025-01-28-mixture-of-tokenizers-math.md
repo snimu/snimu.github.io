@@ -4,7 +4,7 @@ title: "Mixture of Tokenizers &mdash; Performance on addition"
 date: 2025-01-28
 ---
 
-[Mixtures of Tokenizers](../mixture-of-tokenizers/README.md) (MoT) make learning math easier than using classical tokenizers.
+[Mixtures of Tokenizers](https://snimu.github.io/2024/09/03/mixture-of-tokenizers.html) (MoT) make learning math easier than using classical tokenizers.
 
 LLMs from $6$ to $8$ million parameters in size are trained to learn pure addition of two numbers with up to $12$ digits per number. In regimes where memorization is easy, a Baseline model outperforms a slightly smaller MoT, but where memorization is not possible, the MoT is significantly better.
 
