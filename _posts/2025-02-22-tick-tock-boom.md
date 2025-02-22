@@ -63,3 +63,4 @@ For organizations concerned about maintaining their competitive advantage, the c
     month={Feb},
     url={https://github.com/snimu/blog/blob/main/contents/tick-tock-boom/article.md}
 }
+```
