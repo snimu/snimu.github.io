@@ -301,6 +301,44 @@ A few observations:
 
 The first point makes me really pessimistic about this method. I'll be working on other things for now.
 
+### 2025-02-25
+
+I've just noticed that I didn't use a norm between the two models. Maybe that would help?
+
+God fucking damn it. I've had one run where the stacked loss is 3.0... and the individual models are 3.3..., where `use_first_layer is False`, `use_last_layer is False`, and `use_norm is True`. But then I've noticed that I'm only using 4 out of my 8 GPUs, changed that, re-trained while I'm at it, and now the results look like this:
+
+|   val_loss_stack |   val_loss_1 |   val_loss_2 | use_first_layer   | use_last_layer   | use_norm   | same_model_twice   |
+|------------------|--------------|--------------|-------------------|------------------|------------|--------------------|
+|         13.2456  |      3.28372 |      3.31274 | False             | False            | True       | False              |
+|         10.7768  |      3.28372 |      3.31274 | True              | False            | True       | False              |
+|         11.4209  |      3.28372 |      3.31274 | False             | True             | True       | False              |
+|         11.7097  |      3.28372 |      3.31274 | True              | True             | True       | False              |
+|         11.2224  |      3.28372 |      3.28372 | False             | False            | True       | True               |
+|          8.59775 |      3.28372 |      3.28372 | True              | False            | True       | True               |
+|         10.455   |      3.28372 |      3.28372 | False             | True             | True       | True               |
+|          8.53166 |      3.28372 |      3.28372 | True              | True             | True       | True               |
+|          7.20448 |      3.28372 |      3.31274 | False             | False            | False      | False              |
+|          7.05133 |      3.28372 |      3.31274 | True              | False            | False      | False              |
+|          6.2493  |      3.28372 |      3.31274 | False             | True             | False      | False              |
+|          6.66394 |      3.28372 |      3.31274 | True              | True             | False      | False              |
+|          5.87195 |      3.28372 |      3.28372 | False             | False            | False      | True               |
+|          8.05615 |      3.28372 |      3.28372 | True              | False            | False      | True               |
+|          6.49195 |      3.28372 |      3.28372 | False             | True             | False      | True               |
+|          7.59556 |      3.28372 |      3.28372 | True              | True             | False      | True               |
+
+Clearly, norming is much worse than not norming. WTF?
+
+So let's do a few sanity checks:
+
+1. Are the wte and lm_head weights tied?
+    - Yes, they are, very clearly
+2. Do the individual models actually reach the loss they reached in training?
+    - Yes, they do
+
+Okay, so I clearly fucked up somewhere. I've been going at this over and over again, training and validating with slight changes to the code, but the results always suck.
+
+OMG I just noticed that in this old version of nanogpt, the GPT model doesn't use rms_norm on the embeddings, no wonder norming is worse. I'll try with that soon.
+
 ## Citation
 
 ```bibtex
