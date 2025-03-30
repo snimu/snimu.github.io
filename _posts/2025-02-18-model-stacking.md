@@ -339,6 +339,15 @@ Okay, so I clearly fucked up somewhere. I've been going at this over and over ag
 
 OMG I just noticed that in this old version of nanogpt, the GPT model doesn't use rms_norm on the embeddings, no wonder norming is worse. I'll try with that soon.
 
+### 2025-02-26
+
+I have now implemented the following changes:
+
+- If "--use-norm" is set during training, the GPT will use rms_norm on the embeddings
+- If "--use-norm" is set during model stacking, the GPT will use rms_norm on the embeddings, between every model it consists of, and before the lm_head
+
+Question: Should I use layer-norm between wte & blocks, and blocks & lm_head? That way, their residual streams would be even more similar.
+
 ## Citation
 
 ```bibtex
