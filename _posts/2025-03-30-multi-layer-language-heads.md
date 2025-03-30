@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Multi-layer language heads: the output latent is for language and nothing else"
+title: "Multi-layer language heads: the output latent is for text (and nothing else)"
 date: 2025-03-30
 ---
 
