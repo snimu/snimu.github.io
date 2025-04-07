@@ -73,23 +73,11 @@ Those are the theoretical advantages of bidirectional masks, but the thing that 
 
 > From [this post](https://x.com/fofrai/status/1867629384099934557?s=46) by [@fofrAI](https://x.com/fofrai)
 
-Here is my speculation on why this image looks so weird, from [this post](https://x.com/omouamoua/status/1867926507391537260?s=46) by [@omouamoua](https://x.com/omouamoua) (that's me):
+Here is my speculation on why this image looks so weird:
 
-```txt
-Regarding the weird hands:
+![Problems with autoregressive image-generation](/assets/images/2025-04-07-my-dream-vlm/ProblemsWithAutoregressiveImgen.png)
 
-I have a hypothesis that generating images autoregressively left-to-right, then top-to-bottom — as I think Aurora does — will lead to errors mostly at the bottom of the image.
-
-Of course, the obtuse way to explain this is by saying that autoregressive errors accumulate.
-
-But in the case of images, there is a more concrete explanation: the model generates plausible patches for the first row it creates. Here, that’s two hairlines from people at different distances to the camera; makes sense. But as the rows are created with plausible looking patches, one by one, a conflict emerges: both Arnolds intersect, and you need to resolve this in a plausible manner when you have never planned for it. That’s a high stakes situation where a single error can derail the whole image.
-
-This is made worse by the tendency of undertrained models to make the highest-probability token pretty repetitive, and not as dependent on previous tokens as would be ideal. This is likely why there are two Arnolds in the image, and also why both must have a hand in the foreground, forcing the model to resolve this by screwing it up.
-
-Essentially, a next-token predictor never explicitly learns to care about the composition of the entire output.
-
-Multi-token prediction would fix this.
-```
+> From [this post](https://x.com/omouamoua/status/1867926507391537260?s=46) by [@omouamoua](https://x.com/omouamoua) (that's me).
 
 A bidirectional mask in an image *is* multi-token prediction, at least in a way. And yes, this is about image-generation, but 1) I want those advantages for image-generation too (see later how it's connected to image-understanding), and 2) I'm convinced that similar considerations apply to image-understanding as well.
 
@@ -196,7 +184,7 @@ However, I see three reasons not to worry:
 3. As mentioned above, if push comes to shove, we can simply keep the masks in context during inference, instead of replacing them with the generated image, though that comes with the drawbacks discussed before. On the other hand, it would allow us to do the following (not sure if it useful):
     - In (for example) 10% of the images, we mask 0% of the input patches and use no decoder; this is to get the model used to using un-masked images in the context of surrounding text
     - In (for example) 25% of the images, we apply 100% mask tokens, as shown above. We apply the image-generation decoder
-    - In the rest of cases, we randomly choose an $x$, with $0 \lt x \lt 100$, and mask $x\%$ of image tokens. We apply both decoders.
+    - In the rest of cases, we randomly choose an x, with 0<x<100%, and mask x% of image tokens. We apply both decoders.
 
 Of course, if it is easy to modify RoPE positions dynamically, we could very easily go around the problem, but I don't understand RoPE well enough to be able to tell (and my expectation is that it's not possible).
 
@@ -208,7 +196,7 @@ Just to include this into the article explicitly, here is a sketch of how the di
 
 > Sketch of a diffusion process guided by the output hidden states of the VLM.
 
-We use the same hidden states for guidance at every step, and use teacher forcing during training so that all calls can be done in parallel. During inference, we simply run the few diffusion steps (three are shown in the image) one after the other. Since the diffusion model can likely be fairly small (much smaller than the VLM at least), this is comparatively cheap and efficient.
+We use the same hidden states for guidance at every step of a given image resolution, and use teacher forcing during training so that all calls can be done in parallel. During inference, we simply run the few diffusion steps (three are shown in the image) one after the other. Since the diffusion model can likely be fairly small (much smaller than the VLM at least), this is comparatively cheap and efficient.
 
 ### Advantages
 
