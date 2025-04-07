@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My dream VLM"
-date: 2025-04-04
+date: 2025-04-07
 ---
 
 My dream VLM has the following properties:
