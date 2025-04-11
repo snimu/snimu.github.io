@@ -118,7 +118,7 @@ If this is trained end-to-end, with text and other images in context, then:
 
 - There will inherently be a CLIP/SigLIP-like effect, because as long as the text is useful for predicting image-patches and images are useful for predicting text, their embeddings will be aligned automatically to be maximally useful to each other
 - In [Scaling Language-Free Visual Representation Learning](http://arxiv.org/abs/2504.01017), the authors show that scaling self-supervised learning (SSL) methods in large transformers works better than CLIP. So why not save the parameters and just train end-to-end?
-- Most importantly, I will again point to [Scaling Laws for Native Multimodal Models](http://arxiv.org/abs/2504.07951). Early-fusion MoEs are significantly better than late-fusion models. Most importantly, it is best to use way more data and fewer parameters for the early-fusion than the late-fusion model, assuming the same training FLOP budget. That means that the early-fusion model of the same or higher quality can be run much more cheaply than the late-fusion model, because it has fewer parameters.
+- Most importantly, I will again point to [Scaling Laws for Native Multimodal Models](http://arxiv.org/abs/2504.07951). Early-fusion MoEs are significantly better than late-fusion models: it is best to use way more data and fewer parameters for the early-fusion than the late-fusion model, assuming the same training FLOP budget. That means that the early-fusion model of the same or higher quality can be run much more cheaply than the late-fusion model, because it has fewer parameters.
   - *Sidenote:* The authors use a slightly different definition of early-fusion than me, but I'm still calling my models early-fusion because they are trained end-to-end, without any independently trained encoders.
 
 Some of you may fear representation collapse if we do this: the easiest way for the image-encoder to always be able to un-mask the image-tokens is to always produce 0 at its output. But as long as the images are useful for understanding the text coming after them, there is another loss signal working against representation collapse. This makes me believe that representation collapse is not a problem in such a VLM.
@@ -161,6 +161,8 @@ Now, all we have to do to to generate images too, is to add a diffusion model an
 
 > Decoding the common hidden states into image-tokens and an actual image via two independent heads, separated by their own transformer blocks.
 
+#### Advantages: Round 1
+
 I will get to the details of training and inferencing this setup, but first, some general advantages that we can already determine:
 
 - We will see in a moment that we are doing [Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction](https://arxiv.org/abs/2404.02905) (multi-scale generation), which seems to work very well. It allows the model to first generate rough outlines of an image at low resolution, then refine them step-by-step. We are predicting one scale, then the next, and so on. And since the model sees its own outputs through the image-encoder, this is meaningful multi-scale generation.
@@ -174,9 +176,11 @@ I will get to the details of training and inferencing this setup, but first, som
 
 However, there are a few strange things about this.
 
-*Why do we do image-generation from only 25%-75% mask-tokens?*
+### Why do we do image-generation from only 25%-75% mask-tokens?
 
 During inference, we won't, but I will get to that shortly.
+
+### Advantages: Round 2
 
 During training, it offers multiple advantages:
 
@@ -188,7 +192,7 @@ During training, it offers multiple advantages:
   3. It avoids representation collapse even without surrounding text, because the diffusion model is trained against a fixed ground-truth instead of the model's own hidden states.
 - And just to repeat myself, the transformer blocks separating the two should mean that they don't compete for resources, instead training the common backend to produce highly meaningful representations.
 
-*What about inference?*
+### What about inference?
 
 We are currently training with 25-75% mask-tokens, but actual image-understanding should happen with 0% mask-tokens, and image-generation with 100% mask-tokens. How do we do that?
 
@@ -217,6 +221,8 @@ First off, here's what that would look like:
 > Training a multi-scale, bidirectional-per-scale, masked-token image-generation model with masked and un-masked images at every scale.
 
 There is a single disadvantage to this approach: cost. The number of tokens per image is doubled. Of course, as I've written above, these tokens should be treated more like input-tokens than output-tokens, even in image-generation, so while it has high memory- and compute-intensity, it can be parallelized a lot. For inputs containing many images, though, these extra tokens will be felt.
+
+#### Advantages: Round 3
 
 As for advantages:
 
