@@ -103,7 +103,7 @@ I see no reason not to actively train image-understanding by replacing some of t
 
 I would train a small percentage of the samples without masking, so that the model gets used to seeing the full image and using it for downstream tasks, and train the rest with, for example, between 25% and 75% of masked patches.
 
-## Go early fusion
+## Use early fusion
 
 Throw away the SigLIP encoder.
 
