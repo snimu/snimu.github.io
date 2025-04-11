@@ -4,6 +4,8 @@ title: "My dream VLM"
 date: 2025-04-07
 ---
 
+*Edited on April 11, 2025.*
+
 My dream VLM has the following properties:
 
 - Text and images enrich each other's representations instead of competing for resources
