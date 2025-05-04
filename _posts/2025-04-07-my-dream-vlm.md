@@ -4,7 +4,7 @@ title: "My dream VLM"
 date: 2025-04-07
 ---
 
-*Edited on April 11, 2025.*
+*Edited on: 2025-04-11; 2025-05-04.*
 
 My dream VLM has the following properties:
 
@@ -160,6 +160,16 @@ Now, all we have to do to to generate images too, is to add a diffusion model an
 ![Multi-decode](/assets/images/2025-04-07-my-dream-vlm/imgen-multi-decode.png)
 
 > Decoding the common hidden states into image-tokens and an actual image via two independent heads, separated by their own transformer blocks.
+
+Why a diffusion model?
+
+Because the goal at the input is to have and abstracted view of the image which is maximally useful for image-understanding, but at the output, we want to produce a concrete, instantiated image. Diffusion allows for a gradual, teacher-forced generation of that image, and the teacher-forced nature means that we give the diffusion model external guidance in addition to the guidance provided by the hidden states of the transformer. Why is that desireabe? Because it means that the transformer backend won't get punished for producing fairly abstract representations at the output, but is still encouraged to produce ones that allow for producing the right output.
+
+As an example: if the prompt is "lunch box", then a red and a green lunch box fit the bill just the same, and we want the model to understand the prompt independently of the color. However, the strong color differences will lead to high losses in pixels space if it chooses wrongly. With diffusion, the losses won't be so bad. The diffusion model is provided with the general guidance of producing an image of a lunch box from the transformer backend, and gets enough information from teacher-forcing about the precise details of the image that we have in mind as a target that it will be able to produce a low loss without overly destroying the ability for abstraction in the transformer backend. And if more detail is provided&mdash;like previous images, or just more detailed text&mdash;the loss from the diffusion model still trains the transformer backend to take these things into account, and the diffusion model to make use of that information.
+
+In other words, using a diffusion model should help separate abstract guidance from concrete instantiation. Diffusion models do build great internal representations, and we want those in the transformer backend as much as possible so that it helps with image-understanding, but they also produce actual images, which we want only at the output of the image-generation head.
+
+(I make no distinction between diffusion and flow matching by the way. That's because I don't know the nitty gritty of them enough to be able to say something smart about the difference. Also, I recognize that all of this is wild theorizing, and maybe using a VAE of some sort would be better.)
 
 #### Advantages: Round 1
 
