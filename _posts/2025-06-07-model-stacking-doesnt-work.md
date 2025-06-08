@@ -132,7 +132,7 @@ Some observations:
 - Using model looping more often during training doesn't worsen the trained model significantly, but it does worsen the stacked model
 - Using the last layer of the first model makes a larger difference when `coconut_every` is lower
 
-All in all, this trick seems to make things worse rather than beter.
+All in all, this trick seems to make things worse rather than better.
 
 ## Addendum
 
