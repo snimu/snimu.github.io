@@ -134,6 +134,149 @@ Some observations:
 
 All in all, this trick seems to make things worse rather than beter.
 
+## Addendum
+
+*Edit 2025-06-08:* I've found the notes for my early experimental runs which contain additional information, including mention of one ephemeral run that I could never reproduce where the model stack had a validation loss of 3.0 while the individual models had a loss of ~3.3; I remember now that I was *extremely* frustrated about losing that.
+
+The experiments presented above were my final ablations done after everything noted below, so they contain a lot of the same, but the above and below sections don't fully overlap.
+
+*Warning: these are my raw running notes and I swear a lot, I'm just copy-pasting them in.*
+
+### 2025-02-18
+
+Code: [https://github.com/snimu/model-stack](https://github.com/snimu/model-stack)
+
+I based my code on [this old modded-nanogpt speedrun](https://github.com/KellerJordan/modded-nanogpt/blob/master/records/101024_Muon/train_gpt2.py), because 1) it uses tied embedding and unembedding weights, and 2) it's still a fairly simple model, which is probably good for stacking the models.
+
+I trained the first model on 3.1M tokens [CORRECTION: 3.25 *billion* tokens, I don't know what I thought...] of fineweb, took its embedding weights, froze them, and trained a second model with them on the same data. Then, I stacked them. I either removed the last transformer block from the first model when stacked ("Layer removed") or not ("Layer kept").
+
+As a first baseline, I also trained two models with different embedding weights and stacked them, to see what would happen.
+
+Here are the final validation losses for the individual models, and their stack:
+
+| Layer removed | Shared embeddings | Model 1 val loss | Model 2 val loss | Stack val loss |
+| ------------- | ----------------- | ---------------- | ---------------- | -------------- |
+| No            | No                | 3.28             | 3.28             | 7.26           |
+| No            | Yes               | 3.28             | 3.31             | 6.30           |
+| Yes           | No                | 3.28             | 3.28             | 6.66           |
+| Yes           | Yes               | 3.28             | 3.31             | 5.90           |
+
+The three takeaways are:
+
+1. So far, this approach has failed
+   - The model stack is not better than the individual models
+2. Sharing the embedding weights helps noticably with stackings
+   - This is promising; I might be on a good track, and things like training for more tokens might solve the issue
+   - However, the chances of success are still very small
+3. Removing the first layer of model 2 helps in both cases
+   - Hypothesis 1: The [logit lens](https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens) is right that the first layer is what turns the input embeddings into next-token predictions; all other layers are only there to refine the predictions. If this is true, the problem of aligning the predicted-token-positions between models is solved
+   - Hypothesis 2: Removing a layer from model 2 removes one transformation of the output of  model 1. With every layer that is removed, the performance increases.
+
+As a second baseline, I only trained a single model and stacked it with itself (of course, it inherently can only use shared embeddings). Here are the results:
+
+| Layer removed | Model 1 val loss | Stack val loss |
+| ------------- | ---------------- | -------------- |
+| No            | 3.28             | 7.28           |
+| Yes           | 3.28             | 6.28           |
+
+This is best compared to the models with shared embeddings. In this case, stacking the same model twice leads to significantly worse results than stacking two different models. This is a hint that removing the first layer of model 2 helps because it's what turns the input embeddings into next-token predictions; otherwise, why would model 2 hurt performance less than model 1, when applied to the outputs of model 1?
+
+Next steps:
+
+- Shuffle data
+  - By default, the models train on the same data *in the same order*, and only their initialization is different.
+  - Changing this could make a difference, but I don't think it will
+- Train for longer
+  - I don't know if the embedding weights from model 1 are even trained sufficiently after 8M tokens [EDIT: again, it's 3.25 billion tokens]
+  - Training for longer &mdash; for example, for 1B, or 10B tokens &mdash; might help [EDIT: agian, it's already 3.25 billion tokens]
+- Larger models
+  - It's possible that the model size is a limiting factor for the ability to make use of latents
+  - If so, scaling will help
+- Remove last layer of model 1
+  - Removing the first layer of model 2 helps
+  - Just to see what happens, would removing the last layer of model 1 help, too?
+- Remove more layers of model 2
+  - Distinguish between the two hypotheses above
+
+### 2025-02-23
+
+I have done two additional things:
+
+1. Trained for 5x as many tokens as before, so 16.25 billion tokens
+2. Also tried cutting off the last layer of model 1
+
+Here are the results:
+
+|   val_loss_stack |   val_loss_1 |   val_loss_2 | use_first_layer   | use_last_layer   | same_model_twice   |
+|------------------|--------------|--------------|-------------------|------------------|--------------------|
+|         11.3679  |      3.14785 |      3.20779 | False             | False            | False              |
+|         14.7551  |      3.14785 |      3.20779 | True              | False            | False              |
+|          8.91999 |      3.14785 |      3.20779 | False             | True             | False              |
+|         12.2524  |      3.14785 |      3.20779 | True              | True             | False              |
+|         10.0821  |      3.14785 |      3.14785 | False             | False            | True               |
+|         16.0815  |      3.14785 |      3.14785 | True              | False            | True               |
+|         10.547   |      3.14785 |      3.14785 | False             | True             | True               |
+|         16.5895  |      3.14785 |      3.14785 | True              | True             | True               |
+
+A few observations:
+
+1. Training for longer makes model stacking worse, not better.
+2. Removing the last layer of model 1 makes model stacking way worse.
+3. Removing the first layer of model 2 is still really good.
+
+The first point makes me really pessimistic about this method. I'll be working on other things for now.
+
+### 2025-02-25
+
+I've just noticed that I didn't use a norm between the two models. Maybe that would help?
+
+God fucking damn it. I've had one run where the stacked loss is 3.0... and the individual models are 3.3..., where `use_first_layer is False`, `use_last_layer is False`, and `use_norm is True`. But then I've noticed that I'm only using 4 out of my 8 GPUs, changed that, re-trained while I'm at it, and now the results look like this:
+
+|   val_loss_stack |   val_loss_1 |   val_loss_2 | use_first_layer   | use_last_layer   | use_norm   | same_model_twice   |
+|------------------|--------------|--------------|-------------------|------------------|------------|--------------------|
+|         13.2456  |      3.28372 |      3.31274 | False             | False            | True       | False              |
+|         10.7768  |      3.28372 |      3.31274 | True              | False            | True       | False              |
+|         11.4209  |      3.28372 |      3.31274 | False             | True             | True       | False              |
+|         11.7097  |      3.28372 |      3.31274 | True              | True             | True       | False              |
+|         11.2224  |      3.28372 |      3.28372 | False             | False            | True       | True               |
+|          8.59775 |      3.28372 |      3.28372 | True              | False            | True       | True               |
+|         10.455   |      3.28372 |      3.28372 | False             | True             | True       | True               |
+|          8.53166 |      3.28372 |      3.28372 | True              | True             | True       | True               |
+|          7.20448 |      3.28372 |      3.31274 | False             | False            | False      | False              |
+|          7.05133 |      3.28372 |      3.31274 | True              | False            | False      | False              |
+|          6.2493  |      3.28372 |      3.31274 | False             | True             | False      | False              |
+|          6.66394 |      3.28372 |      3.31274 | True              | True             | False      | False              |
+|          5.87195 |      3.28372 |      3.28372 | False             | False            | False      | True               |
+|          8.05615 |      3.28372 |      3.28372 | True              | False            | False      | True               |
+|          6.49195 |      3.28372 |      3.28372 | False             | True             | False      | True               |
+|          7.59556 |      3.28372 |      3.28372 | True              | True             | False      | True               |
+
+Clearly, norming is much worse than not norming. WTF?
+
+So let's do a few sanity checks:
+
+1. Are the wte and lm_head weights tied?
+    - Yes, they are, very clearly
+2. Do the individual models actually reach the loss they reached in training?
+    - Yes, they do
+
+Okay, so I clearly fucked up somewhere. I've been going at this over and over again, training and validating with slight changes to the code, but the results always suck.
+
+OMG I just noticed that in this old version of nanogpt, the GPT model doesn't use rms_norm on the embeddings, no wonder norming is worse. I'll try with that soon.
+
+### 2025-02-26
+
+I have now implemented the following changes:
+
+- If "--use-norm" is set during training, the GPT will use rms_norm on the embeddings
+- If "--use-norm" is set during model stacking, the GPT will use rms_norm on the embeddings, between every model it consists of, and before the lm_head
+
+Question: Should I use layer-norm between wte & blocks, and blocks & lm_head? That way, their residual streams would be even more similar.
+
+---
+
+*This is where my notes stopped. I think right afterwards, I ran the ablations presented in [Results](#results) but never presented them because everything was done a bit sloppily and I was unsure whether or not I would continue the work.*
+
 ## Conclusion
 
 I won't be pursuing this idea further.
