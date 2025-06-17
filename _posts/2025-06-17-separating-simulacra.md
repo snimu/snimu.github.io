@@ -14,6 +14,8 @@ These advantages generalize to many domains: safety, continual learning, charact
 
 To be clear, this is an extremely speculative post, and you should take everything I say with a large grain of salt. I will phrase a lot my claims very strongly, but even if the claims turn out to be directionally correct, effects may be small or nonexistent. I also didn't do much of a literature review; most of the article was written in one go, with only light editing afterward.
 
+*Edit: Apparently, this has already been done in January: [Metadata Conditioning Accelerates Language Model Pre-training](https://arxiv.org/abs/2501.01956v2). Thank you [@_uaej](https://x.com/_ueaj) for pointing this out! I hope this article still brings value.*
+
 ## What exactly do I mean by tags?
 
 Quite simply, give the model metadata about the text it is trying to predict. For example. `<url>https://snimu.github.io></url>`, or `<date>2025-05-24</date>`.
