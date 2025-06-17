@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Separating Simulacra: tags make them smart, tags make them safe"
+title: "Separating Simulacra: tags for smarts and safety"
 date: 2025-06-17
 ---
 
