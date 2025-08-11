@@ -14,9 +14,7 @@ I have measured and plotted the weights of these weighted sums; the lambdas. In 
 
 > Warning: these are all from a single training run, so variations are possible.
 
-This is for the code as of August 9th, 2025, corresponding to [this record log](https://github.com/KellerJordan/modded-nanogpt/blob/master/records/042225_GPT2Medium_Record8/075_640429f2-e726-4e83-aa27-684626239ffc.txt).
-
-You can find the code [here](https://github.com/snimu/modded-nanogpt-experiments/tree/main/experiments/00001-lambdas).
+This is for the code as of August 9th, 2025, corresponding to [this record log](https://github.com/KellerJordan/modded-nanogpt/blob/master/records/042225_GPT2Medium_Record8/075_640429f2-e726-4e83-aa27-684626239ffc.txt). You can find the code [here](https://github.com/snimu/modded-nanogpt-experiments/tree/main/experiments/00001-lambdas). If you have any feedback or ideas, I'd love to hear it on [this Twitter post](https://x.com/omouamoua/status/1954968887763628306).
 
 ## U-Net Lambdas
 
