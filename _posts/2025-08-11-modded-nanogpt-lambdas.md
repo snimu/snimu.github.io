@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "modded-nanogpt: Looking at value-embedding-, U-Net-, and x0-lambdas"
+title: "modded-nanogpt: Analyzing value-embedding-, UNet-, and x0-lambdas"
 date: 2025-08-11
 ---
 
@@ -197,7 +197,7 @@ I've ran the modded-nanogpt medium track training once (so don't overindex on th
 
 ```bibtex
 @misc{snimu2025lambdas,
-    title={modded-nanogpt: Looking at value-embedding-lambdas, U-Net-lambdas, and x0-lambdas,
+    title={modded-nanogpt: Analyzing value-embedding-, UNet-, and x0-lambdas},
     author={Sebastian Nicolas Müller},
     year={2025},
     month={08},
