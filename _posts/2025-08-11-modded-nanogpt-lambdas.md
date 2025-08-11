@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "modded-nanogpt: Looking at value-embedding-lambdas, U-Net-lambdas, and x0-lambdas"
+title: "modded-nanogpt: Looking at value-embedding-, U-Net-, and x0-lambdas"
 date: 2025-08-11
 ---
 
