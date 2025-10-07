@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "modded-nanogpt medium World Record: adding value embeddings"
+title: "modded-nanogpt medium world record: adding value embeddings"
 date: 2025-10-07
 ---
 
