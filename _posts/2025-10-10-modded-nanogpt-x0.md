@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "modded-nanogpt world record: Decoupling embedding size from model dimension"
-date: 2025-10-19
+date: 2025-10-10
 ---
 
 I have achieved a (not yet official) [modded-nanogpt](https://github.com/KellerJordan/modded-nanogpt) medium track [world record](https://github.com/KellerJordan/modded-nanogpt/pull/124).
