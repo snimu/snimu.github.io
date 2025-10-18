@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "modded-nanogpt medium world record: Reusing intermediate activations in the output latents"
+title: "modded-nanogpt medium world record: Re-using intermediate activations in the output latents"
 date: 2025-10-19
 ---
 
