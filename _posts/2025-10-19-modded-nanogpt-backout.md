@@ -10,6 +10,8 @@ This article will describe that record and ablations surrounding it. It will go 
 
 The record has been submitted in [PR#139](https://github.com/KellerJordan/modded-nanogpt/pull/139).
 
+> I want to thank [PrimeIntellect](https://app.primeintellect.ai/), and specifically [Johannes Hagemann](https://x.com/johannes_hage), for generous GPU credits that supported these experiments.
+
 ## The record
 
 I will present the record in three steps: (1) reproducing the baseline results, (2) explaining the architectural change made to produce the record results, and (3) showing the record results.
