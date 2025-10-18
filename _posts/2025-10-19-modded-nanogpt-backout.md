@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "modded-nanogpt medium world record: Re-using intermediate activations in the output latents"
-date: 2025-10-18
+date: 2025-10-19
 ---
 
 Adding the output of layer 11 to the final output latents in a learned, weighted sum leads to a separation of concerns for early model layers: it enables them to focus only on providing context to the next layer, without directly impacting the final prediction. Backing them out of the residual stream this way improves model performance and led me to a new modded-nanogpt medium track world record.
@@ -93,7 +93,7 @@ The final lambdas in these experiments are evidence for that hypothesis: the out
 
 Let's see how the lambdas develop over the course of training, showing the lambdas for all runs, and their means:
 
-![Lambdas over training steps](/assets/images/2025-10-18-modded-nanogpt-backout/lambdas.png)
+![Lambdas over training steps](/assets/images/2025-10-19-modded-nanogpt-backout/lambdas.png)
 
 Two things become very clear:
 
@@ -122,7 +122,7 @@ x = x_lambda * x + skip_lambda * norm(skip_connections[11].detach())
 
 The results are interesting:
 
-![Loss with detached layer-11-latents](/assets/images/2025-10-18-modded-nanogpt-backout/loss_baselines_vs_detached_latents.png)
+![Loss with detached layer-11-latents](/assets/images/2025-10-19-modded-nanogpt-backout/loss_baselines_vs_detached_latents.png)
 
 Without the gradient directly to layer 11, all benefits of the skip connection vanish, and worse. My big problem is that I can think of two possible ways to interpret this, both contradictory:
 
@@ -142,7 +142,7 @@ I ran ablations with two different activation functions:
 
 Here are the results:
 
-![Loss with ReLU and TanH](/assets/images/2025-10-18-modded-nanogpt-backout/loss_baselines_against_relu_tanh.png)
+![Loss with ReLU and TanH](/assets/images/2025-10-19-modded-nanogpt-backout/loss_baselines_against_relu_tanh.png)
 
 Let's start with TanH: it's much better than ReLU, but only about as good as the old baseline, and thus worse than the new record with a skip. That it is between ReLU&mdash;which fully disables the ability of the model to backout layer 11 latents&mdash;and the baseline with a skip but no activation functions is good evidence that a partial ability to backout layer 11 latents from the output is better than none.
 
@@ -166,7 +166,7 @@ x = x_lambda * x + skip_lambda * skip_connection
 
 Here are the results:
 
-![Loss with ReLU and Linear Layer](/assets/images/2025-10-18-modded-nanogpt-backout/loss_baselines_against_relu_linear.png)
+![Loss with ReLU and Linear Layer](/assets/images/2025-10-19-modded-nanogpt-backout/loss_baselines_against_relu_linear.png)
 
 Clearly, the extra parameters help, but only enough to achieve the original baseline loss again. This seems like pretty strong evidence for the backoug hypothesis.
 
@@ -205,7 +205,7 @@ One potential issue is that the lambdas can grow arbitrarily large, leading to o
 
 This can also be shown by fixing `lambda_x` to 1. This preserves the initilization of `lambda_x` to 1.0 and `lambda_skip` to 0.0, but prevents the model from letting the absolute values of the two lambdas sum up to approximately 1 (unless it keeps the `lambda_skip` at 0.0). Here is the average over 5 runs for this setting (see [testing the backout hypothesis](#testing-the-backout-hypothesis) above for details; I intended these experiments for that, but noticed that they make more sense here):
 
-![Loss against fixed baseline](/assets/images/2025-10-18-modded-nanogpt-backout/loss_baselines_against_fixed_lambda_x.png)
+![Loss against fixed baseline](/assets/images/2025-10-19-modded-nanogpt-backout/loss_baselines_against_fixed_lambda_x.png)
 
 This is quite a bit worse! I find that surprising, because the `skip_lambda` should be able to adjust to the `x_lambda` value to cause the same behavior as before, while the language head should be able to make up for the changed norm of the outputs latent.
 
@@ -229,7 +229,7 @@ x = norm(norm(x) * x_lambda + norm(x_skip) * skip_lambda)
 
 I keep the original norms, because the lambdas would otherwise not be very meaningful, and I strongly suspect that leaving them out would lead to much worse performance. Anyway, here is the result:
 
-![Norm-sum-norm: losses](/assets/images/2025-10-18-modded-nanogpt-backout/loss_norm_sum_norm_over_step.png)
+![Norm-sum-norm: losses](/assets/images/2025-10-19-modded-nanogpt-backout/loss_norm_sum_norm_over_step.png)
 
 This is acutally worse than the baseline. I suspect that that's random chance (both are from a single run), but I also doubt that the norm helps; so at least for this specific architecture and small dataset, it's not worth adding it.
 
@@ -237,7 +237,7 @@ This is acutally worse than the baseline. I suspect that that's random chance (b
 
 I chose to add layer 11 to the output latents because I performed a simple ablation where I tried each layer output once (except for the last one, because why would I add the last layer output to the last layer output?). Be aware that I performed these ablations with the previous record's step count of 5590, not the new record's step count of 5550 steps, so the final losses are lower than for the actual record. It showed the following curve:
 
-![Final losses when adding different layer output latents to the last layer output latent](/assets/images/2025-10-18-modded-nanogpt-backout/final-val-losses-add.png)
+![Final losses when adding different layer output latents to the last layer output latent](/assets/images/2025-10-19-modded-nanogpt-backout/final-val-losses-add.png)
 
 All but layer 1 (the second layer) reduce the final validation loss, but layer 11 (the 12th layer) reduces it the most, so I chose it.
 
@@ -267,7 +267,7 @@ As `N` increases, the chosen layers have higher and higher overlap, so the agree
 
 Let's first plot the final validation losses over the sorting method:
 
-![Loss over sorting method](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_method.png)
+![Loss over sorting method](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_method.png)
 
 We can clearly see that the sorting method matters significantly:
 
@@ -279,19 +279,19 @@ We can clearly see that the sorting method matters significantly:
 
 My main takeaway from this is that most likely, it is better to add layers to the output latents which are already close to them (though the architecture quirks of modded-nanogpt make me hesitant to generalize that statement too much). To confirm, let's plot the final validation loss over the mean distance of the skip-layers to the output latents. To be clear, I don't distinguish between the different sorting methods in this plot.
 
-![Final validation loss over distance to output latents](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_dist_to_output.png)
+![Final validation loss over distance to output latents](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_dist_to_output.png)
 
 There seems to be a strong trend for the final loss to increase as the skip-layer moves further away from the output latents, with the exception of the last two layers, which shouldn't be skipped to the output.
 
 Let's look at another important candidate: how does loss develop as we increase the number of layers we skip from?
 
-![Loss over num skip-layers: all](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_numb_layers_all.png)
+![Loss over num skip-layers: all](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_numb_layers_all.png)
 
 The main trend I can make out from this plot is that the results are fairly noisy (as expected from a single run per setting); especially when 13 layers are skipped to the output latents, there should be high overlap between them.
 
 To be able to make out any trends, lets first average over all those values, to get the final validation loss over the number of skip-layers, independent of the layer-selection method:
 
-![Mean loss over num skip-layers](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_num_layers_avg.png)
+![Mean loss over num skip-layers](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_num_layers_avg.png)
 
 If we drew a trendline into this plot, it would probably tilt downward with the number of layers. However, with the level of noise present in the plot, I wouldn't trust such a trendline, so I have to say that the number of layers skipped to the output seems to matter very little. I could be wrong about this, but that's at least what my limited data looks like.
 
@@ -299,7 +299,7 @@ And this makes some sense to me! Let's think back to [the previous section](#why
 
 I'd like to look more closely at this plot the individual layer-selection methods, one by one. Let's start with "Best to Worst" and "Worst to Best" first:
 
-![Loss over num skip-layers: wtb/btw](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_numb_layers_btw-wtb.png)
+![Loss over num skip-layers: wtb/btw](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_numb_layers_btw-wtb.png)
 
 Observations:
 
@@ -310,13 +310,13 @@ The second point would somewhat make sense to me for "Best to Worst"&mdash;we ar
 
 Let's move on to "Early to Late" / "Late to Early":
 
-![Loss over num skip-layers: early to late / late to early](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_num_layers_lth-htl.png)
+![Loss over num skip-layers: early to late / late to early](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_num_layers_lth-htl.png)
 
 This looks like the reverse trend to the "Best to Worst" / "Worst to Best" trend. I find that suspicious, but at least the trends are consistent between groups of selection methods: they are the same for "Best to Worst" and "Worst to Best", and for "Early to Late" and "Late to Early". That tells me that there may actually be something to this; though, again, I'd be careful interpreting the above plots too strongly.
 
 Finally, let's look what happens when we randomly select the layers to skip:
 
-![Loss over num skip-layers: Random layer choice](/assets/images/2025-10-18-modded-nanogpt-backout/loss_over_num_layers_random.png)
+![Loss over num skip-layers: Random layer choice](/assets/images/2025-10-19-modded-nanogpt-backout/loss_over_num_layers_random.png)
 
 This shows a very clear trend of reducing loss with an increasing number of skip-layers. This means that "Best to Worst" and "Worst to Best" are the outliers that buck the trend. I have no explanation for this.
 
@@ -393,7 +393,7 @@ Specifically, I have the following two questions:
 
 So I plotted the lambda value for each layer, from every single experiment. I did *not* distinguish between the different modes of layer selection, or the number of layer from which to skip to the output latents; I simply collected the lambda values. Here they are:
 
-![Lambdas over layer](/assets/images/2025-10-18-modded-nanogpt-backout/lambdas_over_layers_violinplots.png)
+![Lambdas over layer](/assets/images/2025-10-19-modded-nanogpt-backout/lambdas_over_layers_violinplots.png)
 
 I find a few things interesting about this plot:
 
@@ -447,7 +447,7 @@ I originally didn't add the intermediate layer outputs to the output latents; in
 
 I thought I might just concatenate the output of a previous layer to the final output latent and instantly double the dimension from which we project into the vocabulary. I tried this for every single layer's output (including the last layer's), plus the input embedding ("Input emb")  and an extra embedding ("Extra emb"), and noted the final validation loss for each of the runs (again for 5590 steps, not 5550):
 
-![Final val losses: concatenating layer outputs](/assets/images/2025-10-18-modded-nanogpt-backout/final-val-losses-concat.png)
+![Final val losses: concatenating layer outputs](/assets/images/2025-10-19-modded-nanogpt-backout/final-val-losses-concat.png)
 
 There are clearly several layers which reduce the validation loss after 5690 steps significantly.
 
@@ -462,7 +462,7 @@ A third piece of evidence that the layer reuse is an important component of the 
 
 Let's compare this early attempt (using concatenation) to the final record attempt (using a weighted sum):
 
-![Concat vs add final val loss](/assets/images/2025-10-18-modded-nanogpt-backout/concat-vs-add-final-loss.png)
+![Concat vs add final val loss](/assets/images/2025-10-19-modded-nanogpt-backout/concat-vs-add-final-loss.png)
 
 A few observations:
 
@@ -472,7 +472,7 @@ A few observations:
 
 Considering that last fact, why is not this my official record? Well, let's look at the losses *over time*:
 
-![Validation losses: concat layer 12 outputs](/assets/images/2025-10-18-modded-nanogpt-backout/2312-val-losses.png)
+![Validation losses: concat layer 12 outputs](/assets/images/2025-10-19-modded-nanogpt-backout/2312-val-losses.png)
 
 The loss reaches 2.92 only after ~1506 seconds, which is far later than the ~1379 seconds for the actual record, so the extra parameters just make this so damn slow that it isn't worth it for modded-nanogpt speedrunning.
 

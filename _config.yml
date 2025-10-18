@@ -2,9 +2,9 @@ title: snimu's blog
 author: Sebastian
 description: Thoughts on LLMs, AI, and language model training
 url: "https://snimu.github.io"
+timezone: Europe/Berlin
 
 remote_theme: daattali/beautiful-jekyll@6.0.1
-
 plugins:
   - jekyll-feed
 
