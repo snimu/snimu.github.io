@@ -168,7 +168,7 @@ Here are the results:
 
 ![Loss with ReLU and Linear Layer](/assets/images/2025-10-19-modded-nanogpt-backout/loss_baselines_against_relu_linear.png)
 
-Clearly, the extra parameters help, but only enough to achieve the original baseline loss again. This seems like pretty strong evidence for the backoug hypothesis.
+Clearly, the extra parameters help, but only enough to achieve the original baseline loss again. This seems like pretty strong evidence for the backout hypothesis.
 
 Caveats:
 
