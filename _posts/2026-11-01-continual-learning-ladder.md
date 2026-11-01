@@ -68,7 +68,7 @@ Let's imagine we have a million rollouts a day, all learning online, in diverse 
 - Filter episodes to balance the data
 - Replay data to avoid forgetting; and potentially to integrate newly learned experiences more deeply into the larger world model
 - Apply active forgetting and similar techniques to keep up plasticity and output variety
-- Perform architectural adaptations to prevent catastrophic forgetting ([example](https://dylantirandaz.com/projects.html/mitosisbench/))
+- Perform architectural adaptations to prevent catastrophic forgetting ([example](https://research.google/blog/the-sleep-framework-a-new-way-for-llms-to-retain-knowledge-in-continual-learning/))
 - Create simulations of situations that caused high surprisal (prediction abilities can be improved) or are very important (getting better is critical) and play them out over and over again for a great GRPO group update
 - Use simulations in other ways; including pure-language simulation, which I consider to be a form of neural simulation because language is latent human thought (mostly)
 - Relatedly, re-write traces (at least if they are in language; though videos can be edited as well)
