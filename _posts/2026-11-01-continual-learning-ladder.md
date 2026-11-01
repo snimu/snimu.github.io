@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Why Continual Learning"
+title: "Continual Learning, Online and Offline"
 date: 2026-11-01
 ---
 
