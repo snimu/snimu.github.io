@@ -14,7 +14,7 @@ In my opinion, the solution is a combination of [Multi-Stream LLMs](https://arxi
 
 Why am I writing this theoretical post instead of implementing it? Because it will require a lot of research to figure out the details, which I cannot simply perform. Yet I want to get the ideas out there and start a conversation. As a result, the post is highly speculative.
 
-*This post is a partner post to [my previous one on Continual Learning](https://snimu.github.io/2026/11/-1/continual-learning-online-and-offline.html). For any technique presented here, you can imagine the ways in which the data that is generated online generated can be used to improve models offline.*
+*This post is a partner post to [my previous one on Continual Learning](https://snimu.github.io/2026/11/01/continual-learning-online-and-offline.html). For any technique presented here, you can imagine the ways in which the data that is generated online generated can be used to improve models offline.*
 
 ## ECHO
 
@@ -38,7 +38,7 @@ SFT on user tokens is user simulation and should thus help the model internalize
 
 SFT on tool outputs is similarly useful. Getting trained on code outputs, including error messages, [helps models more quickly learning new coding languages](https://www.primeintellect.ai/blog/true-agents-model-the-world), and the same feedback mechanism will help them in any novel situation: a new harness, new tools, a new website, all without having to bloat the compaction with more and more rules.
 
-Another advantage of SFT on tool outputs is that the tool outputs often show concrete information that the model needs: web search results and web pages, the contents of documents, other agents' messages in multi-agent systems. When the model amortizes these facts in its weights, it won't have to look them up over and over again, it won't forget about them when it reasons about new facts, and it can better see connections between disparate facts over the course of many, many compactions (the compaction summary still stays relevant of course). Often, these facts are only relevant to a specific rollout: if we ever want to persist the online improvements a model made, we need [offline refinement](https://snimu.github.io/2026/11/-1/continual-learning-online-and-offline.html) to decide what to train on and what not.
+Another advantage of SFT on tool outputs is that the tool outputs often show concrete information that the model needs: web search results and web pages, the contents of documents, other agents' messages in multi-agent systems. When the model amortizes these facts in its weights, it won't have to look them up over and over again, it won't forget about them when it reasons about new facts, and it can better see connections between disparate facts over the course of many, many compactions (the compaction summary still stays relevant of course). Often, these facts are only relevant to a specific rollout: if we ever want to persist the online improvements a model made, we need [offline refinement](https://snimu.github.io/2026/11/01/continual-learning-online-and-offline.html) to decide what to train on and what not.
 
 ### Why online RL
 
@@ -134,7 +134,7 @@ There can be many Decoders: one producing action tokens for a robotic arm, one p
 
 - Why split into Encoder and Decoders?
 
-The obvious answer is that it gives us all the advantages of Multi-Stream LLMs and Interaction models: parallel streams, seamless steering, and so on. But the others achieve those advantages with just one model, one Attention window (ignoring the slow model from Thinking Machines, that's a different paradigm more reminiscent of [my companion post](https://snimu.github.io/2026/11/-1/continual-learning-online-and-offline.html)). So why split the model up like this?
+The obvious answer is that it gives us all the advantages of Multi-Stream LLMs and Interaction models: parallel streams, seamless steering, and so on. But the others achieve those advantages with just one model, one Attention window (ignoring the slow model from Thinking Machines, that's a different paradigm more reminiscent of [my companion post](https://snimu.github.io/2026/11/01/continual-learning-online-and-offline.html)). So why split the model up like this?
 
 One way to view the Encoder-Decoders split is as a form of parallelism scaling. Multi-agent systems are ultimately just a way of scaling inference compute by increasing parallelism, splitting context across agents. Similarly, splitting the Attention operation itself into multiple shorter streams allows us to scale inference compute without hitting limits early. More Decoders means more parallel Attention capacity. While this is less scalable than multi-agent systems, the communication capacity through latent vectors is far higher.
 
@@ -160,11 +160,11 @@ For model outputs it makes sense because it easily allows for sampling and thus 
 
 For the next-frame prediction it means that we can control the space in which we predict: If we have some way to determine discrete tokens, then we can train their embeddings to create the latent space that maximizes the utility of the model's next-frame predictions to the reward.
 
-In other words, we can use the RL signal from the Decoders to update the embedding models. Whether we want to do this online or only during [offline refinement](https://snimu.github.io/2026/11/-1/continual-learning-online-and-offline.html) is an open question, like many others.
+In other words, we can use the RL signal from the Decoders to update the embedding models. Whether we want to do this online or only during [offline refinement](https://snimu.github.io/2026/11/01/continual-learning-online-and-offline.html) is an open question, like many others.
 
 ## Final words
 
-I keep mentioning [the companion post](https://snimu.github.io/2026/11/-1/continual-learning-online-and-offline.html) to this one. The reason is that I believe that the interplay between online and offline weight updates will be crucial, and the ideas presented above can both benefit from and add to them (example: the Encoder can act as a latent simulator for offline refinement). It made sense to split up the posts, but this one is incomplete without the other.
+I keep mentioning [the companion post](https://snimu.github.io/2026/11/01/continual-learning-online-and-offline.html) to this one. The reason is that I believe that the interplay between online and offline weight updates will be crucial, and the ideas presented above can both benefit from and add to them (example: the Encoder can act as a latent simulator for offline refinement). It made sense to split up the posts, but this one is incomplete without the other.
 
   I'm pretty confident in the companion post. I cannot say the same for this one: The ideas make sense to me, but they obviously leave lots of details undecided, and each of those details could break it. Not to mention that I'm not an expert in the area and could simply have overlooked other work.
 
