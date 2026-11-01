@@ -9,7 +9,7 @@ In this blog, I will express two opinions on continual learning:
 1. Weight updates during a rollout are very useful
 2. Staggered offline refinements are still needed and useful: daily, weekly, etc.
 
-This post will make no specific recommendations for how to do either of these (a companion post will). I don't claim novelty in these opinions or arguments.
+This post will make no specific recommendations for how to do either of these. I don't claim novelty in these opinions or arguments.
 
 ## Why continual learning in weights, during a rollout
 
